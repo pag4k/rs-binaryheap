@@ -1,0 +1,6 @@
+[package]
+name = "rs-priorityheap"
+version = "0.1.0"
+authors = ["Pierre-André Gagnon <pagagnon@gmail.com>"]
+
+[dependencies]

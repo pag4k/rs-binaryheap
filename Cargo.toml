@@ -1,5 +1,5 @@
 [package]
-name = "rs-priorityheap"
+name = "rs-binaryheap"
 version = "0.1.0"
 authors = ["Pierre-André Gagnon <pagagnon@gmail.com>"]
 

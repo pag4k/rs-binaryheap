@@ -15,7 +15,7 @@ impl<T: Ord> BinaryHeap<T> {
     }
     pub fn with_capacity(capacity: usize) -> Self {
         BinaryHeap {
-            data: Vec::new(capacity),
+            data: Vec::with_capacity(capacity),
         }
     }
     pub fn pop(&mut self) -> Option<T> {

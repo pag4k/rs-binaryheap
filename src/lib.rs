@@ -7,25 +7,25 @@ pub struct BinaryHeap<T> {
     data: Vec<T>,
 }
 
-impl<T: Ord> BinaryHeap<T> {
-    pub fn new() -> Self {
-        BinaryHeap {
-            data: Vec::new(),
-        }
+impl<T: Ord> Default for BinaryHeap<T> {
+    fn default() -> Self {
+        BinaryHeap { data: Vec::new() }
     }
+}
+
+impl<T: Ord> BinaryHeap<T> {
     pub fn with_capacity(capacity: usize) -> Self {
         BinaryHeap {
             data: Vec::with_capacity(capacity),
         }
     }
     pub fn pop(&mut self) -> Option<T> {
-        match self.data.is_empty() {
-            false => {
-                let element = self.data.swap_remove(0);
-                self.bubble_down(0);
-                Some(element)
-            },
-            true  => None,
+        if self.data.is_empty() {
+            None
+        } else {
+            let element = self.data.swap_remove(0);
+            self.bubble_down(0);
+            Some(element)
         }
     }
     //Should that return something?
@@ -49,28 +49,32 @@ impl<T: Ord> BinaryHeap<T> {
     fn get_parent(&self, index: usize) -> Option<usize> {
         match index {
             0 => None,
-            _ => Some(((index as f32) / (2 as f32)).ceil() as usize - 1)
+            _ => Some(((index as f32) / (2 as f32)).ceil() as usize - 1),
         }
     }
     fn get_left_child(&self, index: usize) -> Option<usize> {
         let child = 2 * index + 1;
-        match child < self.len() {
-            true  => Some(child),
-            false => None,
+        if child < self.len() {
+            Some(child)
+        } else {
+            None
         }
     }
     fn get_right_child(&self, index: usize) -> Option<usize> {
         let child = 2 * index + 2;
-        match child < self.len() {
-            true  => Some(child),
-            false => None,
+        if child < self.len() {
+            Some(child)
+        } else {
+            None
         }
     }
     fn bubble_up(&mut self, index: usize) {
         let parent = self.get_parent(index);
-        if parent.is_none() { return; }
+        if parent.is_none() {
+            return;
+        }
         let parent = parent.unwrap();
-        if self.data.get(index).unwrap().cmp(self.data.get(parent).unwrap()) == Ordering::Greater {
+        if self.data[index].cmp(&self.data[parent]) == Ordering::Greater {
             self.data.swap(index, parent);
             self.bubble_up(parent);
         }
@@ -79,37 +83,47 @@ impl<T: Ord> BinaryHeap<T> {
         let left_child = self.get_left_child(index);
         let right_child = self.get_right_child(index);
         let swap_candidate = match (left_child, right_child) {
-            (Some(left), Some(right)) =>
-                if self.data.get(left).unwrap().cmp(self.data.get(right).unwrap()) == Ordering::Greater { left } else { right },
-            (Some(left), None       ) => left,
-            (None      , Some(right)) => right,
-            (None      , None       ) => { return; },
+            (Some(left), Some(right)) => {
+                if self.data[left].cmp(&self.data[right]) == Ordering::Greater {
+                    left
+                } else {
+                    right
+                }
+            }
+            (Some(left), None) => left,
+            (None, Some(right)) => right,
+            (None, None) => {
+                return;
+            }
         };
-        if self.data.get(index).unwrap().cmp(self.data.get(swap_candidate).unwrap()) == Ordering::Less {
+        if self.data[index].cmp(&self.data[swap_candidate]) == Ordering::Less {
             self.data.swap(index, swap_candidate);
             self.bubble_down(swap_candidate);
         }
     }
 }
 
-pub struct BinaryHeapIterator<'a,T: 'a> {
+pub struct BinaryHeapIterator<'a, T: 'a> {
     binary_heap: &'a BinaryHeap<T>,
     index: usize,
 }
 
-impl<'a,T> Iterator for BinaryHeapIterator<'a,T> {
+impl<'a, T> Iterator for BinaryHeapIterator<'a, T> {
     type Item = &'a T;
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         self.index += 1;
-        self.binary_heap.data.get(self.index-1)
+        self.binary_heap.data.get(self.index - 1)
     }
 }
 
-impl<'a,T> IntoIterator for &'a BinaryHeap<T> {
+impl<'a, T> IntoIterator for &'a BinaryHeap<T> {
     type Item = &'a T;
-    type IntoIter = BinaryHeapIterator<'a,T>;
+    type IntoIter = BinaryHeapIterator<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        BinaryHeapIterator { binary_heap: &self, index: 0 }
+        BinaryHeapIterator {
+            binary_heap: &self,
+            index: 0,
+        }
     }
 }
 
@@ -121,7 +135,7 @@ mod tests {
     fn doc_examples() {
         // Type inference lets us omit an explicit type signature (which
         // would be `BinaryHeap<i32>` in this example).
-        let mut heap = BinaryHeap::new();
+        let mut heap = BinaryHeap::default();
 
         // We can use peek to look at the next item in the heap. In this case,
         // there's no items in there yet so we get None.

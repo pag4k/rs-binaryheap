@@ -9,11 +9,14 @@ pub struct BinaryHeap<T> {
 
 impl<T: Ord> Default for BinaryHeap<T> {
     fn default() -> Self {
-        BinaryHeap { data: Vec::new() }
+        BinaryHeap::new()
     }
 }
 
 impl<T: Ord> BinaryHeap<T> {
+    pub fn new() -> Self {
+        BinaryHeap { data: Vec::new() }
+    }
     pub fn with_capacity(capacity: usize) -> Self {
         BinaryHeap {
             data: Vec::with_capacity(capacity),
